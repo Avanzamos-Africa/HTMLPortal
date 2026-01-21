@@ -2,7 +2,7 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const Database = require('better-sqlite3');
-const crypto = require('crypto');
+const bcrypt = require('bcrypt');
 
 const PORT = 3000;
 const db = new Database('portal.db');
@@ -36,18 +36,15 @@ db.exec(`
 // Create admin user if not exists
 const adminExists = db.prepare('SELECT * FROM users WHERE username = ?').get('admin');
 if (!adminExists) {
-  const adminPassword = hashPassword('admin123');
+  const adminPassword = bcrypt.hashSync('admin123', 10);
   db.prepare('INSERT INTO users (username, password, role) VALUES (?, ?, ?)').run('admin', adminPassword, 'admin');
 }
 
 // Session store
 const sessions = new Map();
 
-function hashPassword(password) {
-  return crypto.createHash('sha256').update(password).digest('hex');
-}
-
 function generateSessionId() {
+  const crypto = require('crypto');
   return crypto.randomBytes(32).toString('hex');
 }
 
@@ -90,8 +87,9 @@ const mimeTypes = {
 const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, `http://${req.headers.host}`);
   
-  // CORS headers
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  // CORS headers - restrict in production
+  const origin = req.headers.origin || 'http://localhost:3000';
+  res.setHeader('Access-Control-Allow-Origin', origin);
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   
@@ -109,10 +107,9 @@ const server = http.createServer(async (req, res) => {
       // Auth endpoints
       if (url.pathname === '/api/auth/login' && req.method === 'POST') {
         const { username, password } = await parseBody(req);
-        const hashedPassword = hashPassword(password);
-        const user = db.prepare('SELECT * FROM users WHERE username = ? AND password = ?').get(username, hashedPassword);
+        const user = db.prepare('SELECT * FROM users WHERE username = ?').get(username);
         
-        if (user) {
+        if (user && bcrypt.compareSync(password, user.password)) {
           const sessionId = createSession(user.id, user.username, user.role);
           res.writeHead(200);
           res.end(JSON.stringify({ success: true, sessionId, user: { id: user.id, username: user.username, role: user.role } }));
@@ -133,7 +130,7 @@ const server = http.createServer(async (req, res) => {
         }
         
         try {
-          const hashedPassword = hashPassword(password);
+          const hashedPassword = bcrypt.hashSync(password, 10);
           const result = db.prepare('INSERT INTO users (username, password, role) VALUES (?, ?, ?)').run(username, hashedPassword, 'user');
           const sessionId = createSession(result.lastInsertRowid, username, 'user');
           res.writeHead(201);

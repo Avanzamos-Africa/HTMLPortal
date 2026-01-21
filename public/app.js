@@ -1,4 +1,5 @@
 // API Configuration
+// Note: Change this to your production URL when deploying
 const API_BASE = 'http://localhost:3000/api';
 
 // Session management

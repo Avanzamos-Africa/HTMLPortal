@@ -6,10 +6,15 @@
   "scripts": {
     "start": "node server.js"
   },
-  "keywords": ["portal", "crud", "sqlite"],
+  "keywords": [
+    "portal",
+    "crud",
+    "sqlite"
+  ],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "bcrypt": "^6.0.0",
     "better-sqlite3": "^9.2.2"
   }
 }
