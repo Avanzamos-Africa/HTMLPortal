@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Task Portal - Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="header">
+    <div class="header-content">
+      <h1>Task Portal</h1>
+      <div class="user-info">
+        <span id="username-display"></span>
+        <span id="role-badge" class="badge"></span>
+        <button onclick="handleLogout()" class="btn btn-secondary">Logout</button>
+      </div>
+    </div>
+  </header>
+  
+  <main class="main-content">
+    <div class="container">
+      <div class="dashboard-header">
+        <h2>My Tasks</h2>
+        <button onclick="showCreateModal()" class="btn btn-primary">+ New Task</button>
+      </div>
+      
+      <div id="admin-section" class="admin-section" style="display: none;">
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-value" id="total-users">0</div>
+            <div class="stat-label">Total Users</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="total-tasks">0</div>
+            <div class="stat-label">Total Tasks</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="filters">
+        <button class="filter-btn active" data-status="all" onclick="filterTasks('all')">All</button>
+        <button class="filter-btn" data-status="pending" onclick="filterTasks('pending')">Pending</button>
+        <button class="filter-btn" data-status="in-progress" onclick="filterTasks('in-progress')">In Progress</button>
+        <button class="filter-btn" data-status="completed" onclick="filterTasks('completed')">Completed</button>
+      </div>
+      
+      <div id="tasks-container" class="tasks-grid"></div>
+      <div id="empty-state" class="empty-state" style="display: none;">
+        <p>No tasks found. Create your first task to get started!</p>
+      </div>
+    </div>
+  </main>
+  
+  <!-- Create/Edit Task Modal -->
+  <div id="task-modal" class="modal" style="display: none;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="modal-title">Create Task</h3>
+        <button class="close-btn" onclick="closeModal()">&times;</button>
+      </div>
+      <form id="task-form" onsubmit="handleTaskSubmit(event)">
+        <div class="form-group">
+          <label for="task-title">Title</label>
+          <input type="text" id="task-title" required>
+        </div>
+        <div class="form-group">
+          <label for="task-description">Description</label>
+          <textarea id="task-description" rows="4"></textarea>
+        </div>
+        <div class="form-group">
+          <label for="task-priority">Priority</label>
+          <select id="task-priority">
+            <option value="low">Low</option>
+            <option value="medium" selected>Medium</option>
+            <option value="high">High</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="task-status">Status</label>
+          <select id="task-status">
+            <option value="pending" selected>Pending</option>
+            <option value="in-progress">In Progress</option>
+            <option value="completed">Completed</option>
+          </select>
+        </div>
+        <div class="modal-actions">
+          <button type="button" onclick="closeModal()" class="btn btn-secondary">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  
+  <script src="app.js"></script>
+  <script src="dashboard.js"></script>
+</body>
+</html>
