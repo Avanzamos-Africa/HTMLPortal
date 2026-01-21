@@ -1,0 +1,15 @@
+{
+  "name": "html-portal",
+  "version": "1.0.0",
+  "description": "Monolithic web portal with CRUD functionality",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": ["portal", "crud", "sqlite"],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "better-sqlite3": "^9.2.2"
+  }
+}
